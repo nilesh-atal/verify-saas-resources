@@ -1,0 +1,134 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "IBM Security Verify - OAuth2 Introspect Token",
+    "version": "2.0.0",
+    "description": "Introspect OAuth2 token and return token details."
+  },
+  "servers": [
+    {
+      "url": "https://cige2etest-recon-prodwdc.ice.ibmcloud.com"
+    }
+  ],
+  "paths": {
+    "/oauth2/introspect": {
+      "post": {
+        "summary": "Introspect OAuth2 Token",
+        "operationId": "introspectOAuth2Token",
+        "security": [
+          {
+            "basicAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["token"],
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "Token to introspect"
+                  },
+                  "client_id": {
+                    "type": "string",
+                    "description": "OIDC client ID (required if basic auth is not used)"
+                  },
+                  "client_secret": {
+                    "type": "string",
+                    "description": "OIDC client secret (required if basic auth is not used)"
+                  }
+                }
+              },
+              "encoding": {
+                "token": {
+                  "style": "form"
+                },
+                "client_id": {
+                  "style": "form"
+                },
+                "client_secret": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token introspection successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntrospectResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "basicAuth": {
+        "type": "http",
+        "scheme": "basic"
+      }
+    },
+    "schemas": {
+      "IntrospectResponse": {
+        "type": "object",
+        "properties": {
+          "active": {
+            "type": "boolean"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "token_type": {
+            "type": "string"
+          },
+          "exp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "iat": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nbf": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "sub": {
+            "type": "string"
+          },
+          "aud": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "iss": {
+            "type": "string"
+          },
+          "grant_id": {
+            "type": "string"
+          },
+          "userType": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,255 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "IBM Security Verify - Authentication Factors 2.0",
+		"version": "2.0.0",
+		"description": "Retrieve authentication factors for a user."
+	},
+	"servers": [
+		{
+			"url": "https://{tenanturl}",
+			"variables": {
+				"tenanturl": {
+					"default": "{tenant_url}",
+					"description": "Tenant base URL"
+				}
+			}
+		}
+	],
+	"paths": {
+		"/v2.0/factors/totp/{id}": {
+			"get": {
+				"tags": [
+					"Time-based One-time Password 2.0"
+				],
+				"summary": "Retrieve a time-based one-time password enrollment.",
+				"description": "Retrieve a time-based one-time password enrollment.<br><br><b>Entitlements:</b><br> - manageEnrollMFAMethodAnyUser (Manage second-factor authentication enrollment for all users)<br> - manageEnrollMFAMethod (Manage own second-factor authentication enrollment)<br> - readEnrollMFAMethodAnyUser (Read second-factor authentication enrollment for all users)<br> - readEnrollMFAMethod (Read own second-factor authentication enrollment)",
+				"operationId": "getTotpEnrollment_2.0",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The specific enrollment identifier.",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Accept",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"default": "application/json"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Content-Type",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"default": "application/json"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "The specific enrollment.",
+						"content": {}
+					},
+					"401": {
+						"description": "The unauthenticated user does not have the permissions to perform the requested operation",
+						"content": {}
+					}
+				},
+				"x-publicAPI": "true"
+			},
+			"post": {
+				"tags": [
+					"Time-based One-time Password 2.0"
+				],
+				"summary": "Attempt a time-based one-time password verification.",
+				"description": "Attempt a time-based one-time password verification.<br><br><b>NB</b>: When the query parameter 'returnJwt' is included and set to 'true', the response will change from a <b>204</b> with no content to a <b>200</b> with a JSON body. This body will contain an assertion in the form of a JWT, which serves as cryptographic proof of the factor performed. The format of the response body is:<br>{<br>&nbsp;&nbsp;&nbsp;&nbsp;\"assertion\": \"ey...\"<br>}<br><br><b>Entitlements:</b><br> - authnAnyUser (Authenticate any user)<br> - authn (Authenticate self)",
+				"operationId": "verifyTotpEnrollment_2.0",
+				"parameters": [
+					{
+						"name": "id",
+						"in": "path",
+						"description": "The specific enrollment identifier.",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "returnJwt",
+						"in": "query",
+						"description": "If included and set to 'true', a JWT will be included in the verification response.",
+						"schema": {
+							"type": "boolean"
+						}
+					},
+					{
+						"name": "Accept",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"default": "application/json"
+						}
+					},
+					{
+						"name": "Authorization",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"name": "Content-Type",
+						"in": "header",
+						"required": true,
+						"schema": {
+							"type": "string",
+							"default": "application/json"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "The verification data.",
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VerifyTotpEnrollment_2.0"
+							}
+						}
+					},
+					"required": true
+				},
+				"responses": {
+					"204": {
+						"description": "The supplied one-time password was successfully verified.",
+						"content": {}
+					},
+					"400": {
+						"description": "The request cannot be processed because the request body contains improperly structured JSON",
+						"content": {}
+					},
+					"401": {
+						"description": "The unauthenticated user does not have the permissions to perform the requested operation",
+						"content": {}
+					}
+				}
+			},
+			"x-publicAPI": "true",
+			"x-codegen-request-body-name": "body"
+		}
+	},
+	"components": {
+		"schemas": {
+			"TotpEnrollment_2.0": {
+				"required": [
+					"attributes",
+					"created",
+					"enabled",
+					"id",
+					"type",
+					"updated",
+					"userId",
+					"validated"
+				],
+				"type": "object",
+				"properties": {
+					"id": {
+						"type": "string",
+						"description": "The unique identifier of the enrollment"
+					},
+					"userId": {
+						"type": "string",
+						"description": "The unique identifier of the associated user"
+					},
+					"type": {
+						"type": "string",
+						"description": "The type of authentication factor enrollment"
+					},
+					"created": {
+						"type": "string",
+						"description": "The creation time of the enrollment"
+					},
+					"updated": {
+						"type": "string",
+						"description": "The time the enrollment was last updated"
+					},
+					"attempted": {
+						"type": "string",
+						"description": "The time the enrollment was last used for verification"
+					},
+					"enabled": {
+						"type": "boolean",
+						"description": "The enabled state of the enrollment to be used in runtime flows"
+					},
+					"validated": {
+						"type": "boolean",
+						"description": "The validation state of the enrollment"
+					},
+					"attributes": {
+						"$ref": "#/components/schemas/TotpEnrollmentAttributes_2.0"
+					}
+				},
+				"description": "A time-based one-time password enrollment."
+			},
+			"VerifyTotpEnrollment_2.0": {
+				"required": [
+					"otp"
+				],
+				"type": "object",
+				"properties": {
+					"otp": {
+						"type": "string",
+						"description": "The one-time password value"
+					}
+				},
+				"description": "A time-based one-time password verification attempt."
+			},
+			"TotpEnrollmentAttributes_2.0": {
+				"required": [
+					"accountName",
+					"algorithm",
+					"digits",
+					"period"
+				],
+				"type": "object",
+				"properties": {
+					"algorithm": {
+						"type": "string",
+						"description": "The hashing algorithm of the one-time password"
+					},
+					"digits": {
+						"type": "integer",
+						"description": "The number of digits in the one-time password"
+					},
+					"period": {
+						"type": "integer",
+						"description": "The time period for the one-time password"
+					},
+					"accountName": {
+						"type": "string",
+						"description": "The account name that the one-time password is associated with"
+					}
+				},
+				"description": "A time-based one-time password enrollment attributes."
+			}
+		}
+	}
+}
